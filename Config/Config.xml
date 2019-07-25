@@ -1,17 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<class>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><class>
 	<Baha_Setting>
 		<!-- 主機 -->
 		<host>https://api.gamer.com.tw/</host>
 		<!-- 登入資訊 -->
-		<login device="mobile_app" where="user" version="v3">
+		<login device="mobile_app" version="v3" where="user">
 			<dologin>do_login.php</dologin>
 		</login>
 		<!-- 發文資訊 -->
-		<post device="mobile_app" where="form" version="v2">
+		<post device="mobile_app" version="v2" where="form">
 			<getinfo>post1.php?type=1</getinfo>
 			<bsn>60076</bsn><!-- 板塊ID -->
 			<post>post2.php</post>
 		</post>
 	</Baha_Setting>
+	<User_information>
+		<account/>
+		<password/>
+	</User_information>
 </class>

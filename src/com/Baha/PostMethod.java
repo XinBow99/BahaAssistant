@@ -18,13 +18,15 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import org.json.*;
+
 public class PostMethod {
 
 	private CloseableHttpClient bahaclient;
 	private String User_Information = "";
 	private boolean signin = false;
-	
-	public PostMethod(String code,String userAC,String UserPW) throws IOException {
+
+	public PostMethod(String code, String userAC, String UserPW, String loginUrl) throws IOException {
 		// cookie setup
 		BasicCookieStore cookieStore = new BasicCookieStore();
 		BasicClientCookie cookie = new BasicClientCookie("ckAPP_VCODE", code);
@@ -37,8 +39,8 @@ public class PostMethod {
 		form.add(new BasicNameValuePair("passwd", UserPW));
 		form.add(new BasicNameValuePair("vcode", "7045"));
 		UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);
-		//set Headers
-		HttpPost httpPost = new HttpPost("https://api.gamer.com.tw/mobile_app/user/v3/do_login.php");
+		// set Headers
+		HttpPost httpPost = new HttpPost(loginUrl);
 		httpPost.setEntity(entity);
 		httpPost.setHeader("user-agent", "Bahadroid (https://www.gamer.com.tw/)");
 		httpPost.setHeader("x-bahamut-app-instanceid", "cc2zQIfDpg4");
@@ -47,7 +49,7 @@ public class PostMethod {
 		httpPost.setHeader("content-type", "application/x-www-form-urlencoded");
 		httpPost.setHeader("accept-encoding", "gzip");
 		httpPost.setHeader("cookie", "ckAPP_VCODE=7045");
-		//Create handler author:Ramesh Fadatare
+		// Create handler author:Ramesh Fadatare
 		ResponseHandler<String> responseHandler = response -> {
 			int status = response.getStatusLine().getStatusCode();
 			if (status >= 200 && status < 300) {
@@ -57,21 +59,30 @@ public class PostMethod {
 				throw new ClientProtocolException("Unexpected response status: " + status);
 			}
 		};
-		//Post to Host
+		// Post to Host
 		String responseBody = getBahaclient().execute(httpPost, responseHandler);
-		this.User_Information = responseBody;
-		this.signin = true;
-		System.out.println("[Info]登入完畢");
+		JSONObject connection_rep = new JSONObject(responseBody);
+		if (connection_rep.has("code")) {
+			System.out.println(connection_rep.getString("message"));
+		} else {
+			this.User_Information = responseBody;
+			// System.out.println(getUser_Information());
+			this.signin = true;
+			System.out.println("[Info]登入完畢");
+		}
 	}
-	//取得目前連線內容
+
+	// 取得目前連線內容
 	public CloseableHttpClient getBahaclient() {
 		return bahaclient;
 	}
-	//取得勇者資訊
+
+	// 取得勇者資訊
 	public String getUser_Information() {
 		return User_Information;
 	}
-	//是否登入完畢
+
+	// 是否登入完畢
 	public boolean get_Signin() {
 		return signin;
 	}
